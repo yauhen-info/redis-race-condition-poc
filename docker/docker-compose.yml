@@ -1,0 +1,59 @@
+version: "3.9"
+
+services:
+  mysql-db:
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    volumes:
+      - mysql-data:/var/lib/mysql
+    restart: always
+    networks:
+      - poc-app-network
+  db_updater_service:
+    restart: "no"
+    build:
+      context: ./db_updater
+      dockerfile: Dockerfile
+    volumes:
+    - ./db_updater/update_db_job.sh:/update_db_job.sh
+    depends_on:
+      - mysql-db
+    command: ["/bin/sh","/update_db_job.sh"]
+    networks:
+      - poc-app-network
+  rest-service:
+    depends_on:
+      - mysql-db
+      - redis
+    build:
+      context: ./rest_service
+      dockerfile: Dockerfile
+    networks:
+      - poc-app-network
+    expose:
+      - "8080"
+  redis:
+    image: redis:latest
+    volumes:
+      - ./redis/redis.conf:/redis.conf
+    networks:
+      - poc-app-network
+    ports:
+      - 6379:6379
+    command: [ "redis-server", "/redis.conf" ]
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - rest-service
+    networks:
+      - poc-app-network
+    ports:
+      - "4000:4000"
+volumes:
+  mysql-data:
+networks:
+  poc-app-network:
+    driver: bridge

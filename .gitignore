@@ -1,0 +1,6 @@
+.idea
+docker/.idea
+docker/rest_service/rest-service-java/.idea
+docker/rest_service/rest-service-java/*.iml
+docker/rest_service/rest-service-java/target
+docker/rest_service/rest-service-java/dependency-reduced-pom.xml
