@@ -15,11 +15,8 @@ services:
     build:
       context: ./db_updater
       dockerfile: Dockerfile
-    volumes:
-    - ./db_updater/update_db_job.sh:/update_db_job.sh
     depends_on:
       - mysql-db
-    command: ["/bin/sh","/update_db_job.sh"]
     networks:
       - poc-app-network
   rest-service:
