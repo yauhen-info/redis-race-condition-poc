@@ -38,18 +38,19 @@ scoring first and second goals in hockey), the client receives the event E2, and
 
 An example scenario of a race condition:
 
-|Time|Data Master|First client (C1)|Second client (C2)|
+|Time|Data Master|First client thread (C1)|Second client thread (C2)|
 |---|---|---|---|
 |1|Puts E1 into DB| | |
 |2| |C1 reads event E1 from DB| |
 |3|Puts E2 into DB| | |
 |4| | |C2 reads event E2 from DB |
-|5| | |C2 puts event E2 into cache|
-| | |  | HTTP end client sees E2 from the cache |
-|6| C1 puts event E1 into cache |  | |
-| | HTTP end client sees E1 from the cache, when calls next |  | |
+|5a| | |C2 puts event E2 into cache|
+|5b| |  | C2 returns E2 as a response to HTTP end client|
+|5c | |  | HTTP end client sees E2 from the cache |
+|6a| | C1 puts event E1 into cache |  |
+|6b | | C1 returns E1 as a response to HTTP end client| | 
+|6c | | HTTP end client sees E1 from the cache, when calls next |  |
 
-In the end, from the HTTP end client, the events are seen in the order E2, E1. 
+In the end, from the HTTP end client, the events are seen in the order E2, E1 (at time 5c and 6c accordingly).
 
-But the order is the opposite to real
-world order, thus can mislead the end client, which we want to avoid.
+But the order is the opposite to real world order, thus can mislead the end client, which we want to avoid.
