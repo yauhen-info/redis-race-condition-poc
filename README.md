@@ -5,7 +5,7 @@ While being under project root folder 'caching-redis-poc', run the following
 
 ## Architecture overview
 
-![Services overview](redis-poc.png)
+![Services overview](pictures/redis-poc.png)
 
 The previous command starts the services:
 
@@ -38,7 +38,7 @@ scoring first and second goals in hockey), the client receives the event E2, and
 
 An example scenario of a race condition:
 
-|Time|Data Master|First client thread (C1)|Second client thread (C2)|
+|Time|Data Master|1st client (C1)|2nd client (C2)|
 |---|---|---|---|
 |1|Puts E1 into DB| | |
 |2| |C1 reads event E1 from DB| |
@@ -54,3 +54,58 @@ An example scenario of a race condition:
 In the end, from the HTTP end client, the events are seen in the order E2, E1 (at time 5c and 6c accordingly).
 
 But the order is the opposite to real world order, thus can mislead the end client, which we want to avoid.
+
+## Testing the race conditions scenarios
+
+There are three scenarios for testing race condition. All three implemented as a bash script calling different services
+inside docker avoiding nginx, i.e. calling each service directly.
+
+![Testing schema overview](pictures/testing-redis-poc.png)
+
+### Scenario 1
+
+Scenario tries to imitate a delay in one thread. It's tested with a single data entry named game_1 in MySQL
+
+Can be started from the root folder with the command
+
+> sh test_scenario_1.sh
+
+|Time|Test job|1st client (C1)|2nd client (C2)|3rd client (C3)|MySQL state (event number)|Redis state (event number)|
+|---|---|---|---|---|---|---|
+|1a|Puts E1 into DB| | | | | |
+|1b|Cleans up Redis| | | || |
+|1c| | | | | 1| - |
+|2a| | C1 reads the DB value E1 (in log 'Retrieved database value 1')| | || |
+|2b| Noop for 1s to be sure E1 if read from DB | | || | |
+|2c| | C1 sleeps for 6s in background (in log 'Waiting for 6000ms')| | || |
+|3a|Updates DB with E2 instead of E1| | | || |
+|3b| | | | |2| - |
+|4a| | | C2 runs with no delay: reads E2 from DB (as redis is not filled yet by C1 with event E1) | || |
+|4b| | | C2 sets E2 into Redis | || |
+|4c| | | | | 2 | 2 |
+|4d| | | C2 observes E2 on frontend, {"key":"game_1", "value":"2", status: "OK", message:"Found"} | || |
+|5a| | | | C3 runs with no delay: reads E2 from DB (as redis is not filled yet by C1 with event E1) | || |
+|5b| | | |  C3 sets E2 into Redis | || |
+|5c| | | | | 2 | 2 |
+|5d| | | | C3 observes E2 on frontend, {"key":"game_1", "value":"2", status: "OK", message:"Found"} | || |
+|6| Noop for 5s in order to let C1 to get back form background with results | | || |
+|7| | C1 observes E2 on frontend, {"key":"game_1", "value":"2", status: "OK", message:"Found"} | || |
+
+### Scenario 2
+
+The scenario is similar to the Scenario 1, but adds an extra step at the end emulating, that C1 has no key in Redis as
+it expired already.
+
+WIP
+
+### Scenario 3
+
+While data is updated MySql, thousands of requests are fired against each rest-service, which write the results into a
+log file. The file is analyzed: it is being checked whether the cache had inconsistencies at any point in time, i.e.
+earlier events appeared after later.
+
+WIP
+
+### Work to do
+
+1. Grafana+prometheus for testing the performance
