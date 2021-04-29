@@ -1,0 +1,14 @@
+log:
+  level: info
+  loggers:
+    com.ostyle.poc.data:
+      level: debug
+mysql-db:
+  jdbcUrl: jdbc:mysql://mysql-db:3306/score_db
+  username: root
+  password: root
+redis:
+  host: redis
+  port: 6379
+  timeout: 25000
+  expireTime: 60

@@ -1,7 +1,12 @@
+.DS_Store
 .idea
 docker/.idea
+docker/.DS_Store
 docker/rest_service/rest-service-java/.idea
 docker/rest_service/rest-service-java/*.iml
 docker/rest_service/rest-service-java/target
+docker/rest_service/.DS_Store
+docker/rest_service/rest-service-java/.DS_Store
+docker/rest_service/rest-service-java/src/.DS_Store
 docker/rest_service/rest-service-java/dependency-reduced-pom.xml
 docker/rest_service/rest-service-java/src/main/resources/config-local.yml

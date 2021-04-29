@@ -15,15 +15,13 @@ prepare_mysql() {
 }
 get_event_data_from_mysql() {
   SQL_SELECT_CMD="SELECT name, counter FROM scores WHERE name = '$EVENT_TO_TEST';"
-  echo "Current value in MySql:"
-  mysql ${MYSQL_DATABASE} -t -e "$SQL_SELECT_CMD"
+  echo "Current value in MySql:" && mysql ${MYSQL_DATABASE} -t -e "$SQL_SELECT_CMD"
 }
 
 update_event_data_from_mysql() {
   echo "Setting new value to MySql..."
   SQL_UPDATE_CMD="UPDATE scores SET counter = counter+1 WHERE name = '$EVENT_TO_TEST';"
-  mysql ${MYSQL_DATABASE} -e "$SQL_UPDATE_CMD"
-  echo "New value has been set to MySql."
+  mysql ${MYSQL_DATABASE} -e "$SQL_UPDATE_CMD" && echo "New value has been set to MySql."
 }
 clean_up_redis() {
   # clean all Redis keys
@@ -44,7 +42,7 @@ current_data_in_storages() {
 
 call_to_service_with_delay() {
   echo "Started a delayed request with the service_$1:"
-  result=$(curl -s "docker_rest-service_$1:8080/delayed/$EVENT_TO_TEST?delay=$2")
+  result=$(curl -s "docker_rest-service_$1:8080/$EVENT_TO_TEST?delay=$2")
   echo ""
   echo "Got result from rest-service-$1 (delayed)"
   echo "${result}"
@@ -58,9 +56,10 @@ sleeping() {
 }
 call_to_service_no_delay() {
   echo ""
-  echo "Making request to service_$1 (no delay): "
+  echo "Making request to service_$1 (no delay)..."
   curl -s docker_rest-service_$1:8080/$EVENT_TO_TEST
   echo ""
+  echo "Finished request to service_$1 (no delay)."
 }
 
 echo "SCENARIO-1"
@@ -69,9 +68,9 @@ prepare_mysql
 clean_up_redis
 
 current_data_in_storages
-call_to_service_with_delay "1" "6000" &
+call_to_service_with_delay "1" "8000" &
 
-sleeping 3
+sleeping 5
 update_event_data_from_mysql
 current_data_in_storages
 
@@ -81,5 +80,6 @@ current_data_in_storages
 sleeping 3
 current_data_in_storages
 call_to_service_no_delay "3"
+sleeping 1
 current_data_in_storages
-sleep 5
+sleep 10
