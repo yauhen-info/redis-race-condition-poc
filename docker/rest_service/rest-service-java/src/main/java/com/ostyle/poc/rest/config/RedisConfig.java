@@ -9,6 +9,15 @@ public class RedisConfig {
     private long expireTime;
     private int port;
     private int timeout;
+    private int maxThreads;
+
+    public int getMaxThreads() {
+        return maxThreads;
+    }
+
+    public void setMaxThreads(int maxThreads) {
+        this.maxThreads = maxThreads;
+    }
 
     public int getPort() {
         return port;

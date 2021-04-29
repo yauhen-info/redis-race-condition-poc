@@ -33,7 +33,7 @@ public class RedisService implements MonitoredRetrievable {
         RedisConfig config = configFactory.get().config(RedisConfig.class, getStorageName());
 
         JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
-        jedisPoolConfig.setMaxTotal(100);
+        jedisPoolConfig.setMaxTotal(config.getMaxThreads());
 
         pool = new JedisPool(jedisPoolConfig, config.getHost(), config.getPort(), config.getTimeout(), null);
         keyExpireTime = config.getExpireTime();
