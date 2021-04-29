@@ -96,7 +96,89 @@ Can be started from the root folder with the command
 The scenario is similar to the Scenario 1, but adds an extra step at the end emulating, that C1 has no key in Redis as
 it expired already.
 
-WIP
+An example of log output for the scenario-2, when we have 2 clients, C1 is delayed for so much that the key(set by C2)
+is expired, so nothing in Redis, and C1 doesn't write outdated E1 into Redis, but repeats the whole call again.
+
+```
+REST-SERVICE-1
+
+[2021-04-29 21:12:34,792] c.o.p.d.MySqlService: mysql-db: started value lookup by key 'game_1'
+[2021-04-29 21:12:34,928] c.o.p.d.MySqlService: mysql-db: finished value lookup [game_1 : 1] in 135594433ns (135ms): HIT
+[2021-04-29 21:12:34,929] c.o.p.d.ScoreDataService: Retrieved database value '1'
+[2021-04-29 21:12:34,929] c.o.p.d.ScoreDataService: Waiting for 6000ms
+[2021-04-29 21:12:40,906] c.o.p.d.ScoreDataService: Woke up after 6000ms
+[2021-04-29 21:12:40,907] c.o.p.d.RedisService: redis: Started updating Redis with [game_1 : 1]
+[2021-04-29 21:12:40,924] c.o.p.d.RedisService: Potential concurrent modification of Redis key 'game_1' happened; transaction has been discarded.
+[2021-04-29 21:12:40,934] c.o.p.d.MySqlService: mysql-db: started value lookup by key 'game_1'
+[2021-04-29 21:12:41,150] c.o.p.d.MySqlService: mysql-db: finished value lookup [game_1 : 2] in 215194082ns (215ms): HIT
+[2021-04-29 21:12:41,150] c.o.p.d.ScoreDataService: Retrieved database value '2'
+[2021-04-29 21:12:41,150] c.o.p.d.ScoreDataService: Waiting for 6000ms
+[2021-04-29 21:12:47,154] c.o.p.d.ScoreDataService: Woke up after 6000ms
+[2021-04-29 21:12:47,154] c.o.p.d.RedisService: redis: Started updating Redis with [game_1 : 2]
+[2021-04-29 21:12:47,159] c.o.p.d.RedisService: redis: Finished updating Redis for key (game_1) in 4462794ns (4ms): WRITE
+[2021-04-29 21:12:47,166] i.b.j.i.r.RequestTimer: finished in 12423 ms
+```
+
+output from the scenario log
+```
+test_scenario_2_1     | SCENARIO-2
+test_scenario_2_1     | 
+test_scenario_2_1     | Cleaning mysql up...
+test_scenario_2_1     | Mysql cleaned up.
+test_scenario_2_1     | Adding an event to mysql...
+test_scenario_2_1     | Added an event to mysql.
+test_scenario_2_1     | Cleaning redis up...
+test_scenario_2_1     | OK
+test_scenario_2_1     | Redis cleaned up.
+test_scenario_2_1     | Current value in MySql:
+test_scenario_2_1     | +--------+---------+
+test_scenario_2_1     | | name   | counter |
+test_scenario_2_1     | +--------+---------+
+test_scenario_2_1     | | game_1 |       1 |
+test_scenario_2_1     | +--------+---------+
+test_scenario_2_1     | Current value in Redis:
+test_scenario_2_1     | 
+test_scenario_2_1     | 
+test_scenario_2_1     | Holding on all commands for 3 sec
+test_scenario_2_1     | Started a delayed request with the service_1:
+test_scenario_2_1     | Setting new value to MySql.
+test_scenario_2_1     | New value has been set to MySql.
+test_scenario_2_1     | Current value in MySql:
+test_scenario_2_1     | +--------+---------+
+test_scenario_2_1     | | name   | counter |
+test_scenario_2_1     | +--------+---------+
+test_scenario_2_1     | | game_1 |       2 |
+test_scenario_2_1     | +--------+---------+
+test_scenario_2_1     | Current value in Redis:
+test_scenario_2_1     | 
+test_scenario_2_1     | 
+test_scenario_2_1     | Making request to service_2 (no delay):
+test_scenario_2_1     | {"key":"game_1", "value":"2", status: "OK", message:"Found"}
+test_scenario_2_1     | Current value in MySql:
+test_scenario_2_1     | +--------+---------+
+test_scenario_2_1     | | name   | counter |
+test_scenario_2_1     | +--------+---------+
+test_scenario_2_1     | | game_1 |       2 |
+test_scenario_2_1     | +--------+---------+
+test_scenario_2_1     | Current value in Redis:
+test_scenario_2_1     | 2
+test_scenario_2_1     | Imitate expired key in redis
+test_scenario_2_1     | Cleaning redis up...
+test_scenario_2_1     | OK
+test_scenario_2_1     | Redis cleaned up.
+test_scenario_2_1     | 
+test_scenario_2_1     | Got result from rest-service-1 (delayed)
+test_scenario_2_1     | {"key":"game_1", "value":"2", status: "OK", message:"Found"}
+test_scenario_2_1     | Current value in MySql:
+test_scenario_2_1     | +--------+---------+
+test_scenario_2_1     | | name   | counter |
+test_scenario_2_1     | +--------+---------+
+test_scenario_2_1     | | game_1 |       2 |
+test_scenario_2_1     | +--------+---------+
+test_scenario_2_1     | Current value in Redis:
+test_scenario_2_1     | 2
+
+```
 
 ### Scenario 3
 

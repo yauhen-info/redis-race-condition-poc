@@ -45,7 +45,7 @@ current_data_in_storages() {
 
 call_to_service_with_delay() {
   echo "Started a delayed request with the service_$1:"
-  result=$(curl -s "docker_rest-service_$1:8080/delayed/$EVENT_TO_TEST?delay=$2")
+  result=$(curl -s "docker_rest-service_$1:8080/$EVENT_TO_TEST?delay=$2")
   echo ""
   echo "Got result from rest-service-$1 (delayed)"
   echo "${result}"
@@ -80,12 +80,8 @@ current_data_in_storages
 call_to_service_no_delay "2"
 current_data_in_storages
 
-sleeping 3
-current_data_in_storages
-call_to_service_no_delay "3"
-current_data_in_storages
-sleep 5
-
 echo "Imitate expired key in redis"
 clean_up_redis
-call_to_service_no_delay "1"
+
+sleep 10
+
