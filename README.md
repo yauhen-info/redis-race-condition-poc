@@ -237,4 +237,5 @@ WIP
 
 ### Work to do
 
-1. Grafana+prometheus for testing the performance
+1. Grafana+prometheus ro monitor, analyze and improve the performance
+2. Consider relaxing the redis watch/unwatch while reading a value from Redis.
