@@ -3,6 +3,52 @@
 While being under project root folder 'caching-redis-poc', run the following
 > sh start_project.sh
 
+It will spin up the services pictured right below, including db_updater_job with the output similar to the following
+```
+...
+Use 'docker scan' to run Snyk tests against images to find vulnerabilities and learn how to fix them
+Creating docker_mysql-db_1 ... done
+Creating docker_redis_1    ... done
+Creating docker_rest-service_1 ... done
+Creating docker_rest-service_2 ... done
+Creating docker_rest-service_3 ... done
+Creating docker_db_updater_service_1 ... done
+Creating docker_nginx_1              ... done
+Attaching to docker_db_updater_service_1, docker_nginx_1
+db_updater_service_1  | +--------+---------+
+db_updater_service_1  | | name   | counter |
+db_updater_service_1  | +--------+---------+
+db_updater_service_1  | | game_1 |       2 |
+db_updater_service_1  | +--------+---------+
+nginx_1               | /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+nginx_1               | /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+nginx_1               | /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+nginx_1               | 10-listen-on-ipv6-by-default.sh: info: Getting the checksum of /etc/nginx/conf.d/default.conf
+nginx_1               | 10-listen-on-ipv6-by-default.sh: info: Enabled listen on IPv6 in /etc/nginx/conf.d/default.conf
+nginx_1               | /docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+nginx_1               | /docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+nginx_1               | /docker-entrypoint.sh: Configuration complete; ready for start up
+db_updater_service_1  | +--------+---------+
+db_updater_service_1  | | name   | counter |
+db_updater_service_1  | +--------+---------+
+db_updater_service_1  | | game_1 |       3 |
+db_updater_service_1  | +--------+---------+
+db_updater_service_1  | +--------+---------+
+db_updater_service_1  | | name   | counter |
+db_updater_service_1  | +--------+---------+
+db_updater_service_1  | | game_1 |       4 |
+db_updater_service_1  | +--------+---------+
+db_updater_service_1  | +--------+---------+
+db_updater_service_1  | | name   | counter |
+db_updater_service_1  | +--------+---------+
+db_updater_service_1  | | game_1 |       5 |
+db_updater_service_1  | +--------+---------+
+...
+```
+
+then it's possible to call the service by
+> curl localhost:4000/game_1
+
 ## Architecture overview
 
 ![Services overview](pictures/redis-poc.png)
@@ -120,6 +166,7 @@ REST-SERVICE-1
 ```
 
 output from the scenario log
+
 ```
 test_scenario_2_1     | SCENARIO-2
 test_scenario_2_1     | 
