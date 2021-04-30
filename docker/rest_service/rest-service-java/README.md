@@ -40,8 +40,7 @@ Example
 
 ## What is this not about?
 
-The POC is NOT for Production. Thus it was no necessary otherwise investment made into good Java development practices,
-like
+The POC is NOT for Production. Thus it was no proper investment made into good Java development practices, e.g.
 
 - code to interfaces;
 - flexible and reasonable ORM;
