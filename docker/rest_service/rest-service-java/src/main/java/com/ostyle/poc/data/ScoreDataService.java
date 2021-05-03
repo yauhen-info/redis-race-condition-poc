@@ -49,7 +49,7 @@ public class ScoreDataService {
                 try {
                     return redisStorage.updateValueInRedis(key, dataFromDB); // todo: consider a separate thread to return the value to use quicker
                 } catch (InvalidRedisKeyValueState e) {
-                    return requestData(key, delay); // need to request again, as Redis key could have been expried by this time
+                    return requestData(key, delay); // need to request again, as Redis key could have been expired by this time
                 }
             }
             String errorMessage = String.format("Data not found in DB for key '%s'.", key);
