@@ -36,7 +36,7 @@ public class ScoreDataService {
         try (Jedis jedis = redisStorage.getPool().getResource()) {
             // first, try to get data from Redis
             redisStorage.setJedis(jedis);
-            String dataByKey = redisStorage.getDataByKey(key);
+            String dataByKey = redisStorage.getDataByKeyMonitored(key);
             if (dataByKey != null) {
                 return dataByKey;
             }
@@ -52,8 +52,9 @@ public class ScoreDataService {
                     return requestData(key, delay); // need to request again, as Redis key could have been expried by this time
                 }
             }
-            LOGGER.error("Data not found in DB for key '{}'", key);
-            throw new DataNotFoundException(String.format("Data not found in DB for key '%s'.", key));
+            String errorMessage = String.format("Data not found in DB for key '%s'.", key);
+            LOGGER.error(errorMessage);
+            throw new DataNotFoundException(errorMessage);
         }
     }
 
