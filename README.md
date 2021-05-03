@@ -137,6 +137,125 @@ Can be started from the root folder with the command
 |6| Noop for 5s in order to let C1 to get back form background with results | | || |
 |7| | C1 observes E2 on frontend, {"key":"game_1", "value":"2", status: "OK", message:"Found"} | || |
 
+```
+INFO  [2021-05-01 19:50:42,096] bootique-http-15 i.b.j.i.r.RequestTimer: started
+DEBUG [2021-05-01 19:50:42,260] bootique-http-15 c.o.p.d.MySqlService: mysql-db: started value lookup by key 'game_1'
+DEBUG [2021-05-01 19:50:44,761] bootique-http-15 c.o.p.d.MySqlService: mysql-db: finished value lookup [game_1 : 1] in 2500833203ns (2500ms): HIT
+DEBUG [2021-05-01 19:50:44,762] bootique-http-15 c.o.p.d.ScoreDataService: Retrieved database value '1'
+DEBUG [2021-05-01 19:50:44,762] bootique-http-15 c.o.p.d.ScoreDataService: Waiting for 8000ms
+DEBUG [2021-05-01 19:50:52,763] bootique-http-15 c.o.p.d.ScoreDataService: Woke up after 8000ms
+DEBUG [2021-05-01 19:50:52,764] bootique-http-15 c.o.p.d.RedisService: redis: Started updating Redis with [game_1 : 1]
+DEBUG [2021-05-01 19:50:52,827] bootique-http-15 c.o.p.d.RedisService: Potential concurrent modification of Redis key 'game_1' happened; transaction has been discarded.
+INFO  [2021-05-01 19:50:52,836] bootique-http-15 i.b.j.i.r.RequestTimer: finished in 10740 ms
+
+NFO  [2021-05-01 19:50:52,837] bootique-http-15 i.b.j.s.RequestLogger: 172.19.0.7 - - [01/May/2021:19:50:42 +0000] "GET /game_1?delay=8000 HTTP/1.1" 200 60 "-" "curl/7.68.0"
+INFO  [2021-05-01 19:51:35,463] bootique-http-18 i.b.j.i.r.RequestTimer: started
+INFO  [2021-05-01 19:51:35,472] bootique-http-18 i.b.j.i.r.RequestTimer: finished in 8 ms
+INFO  [2021-05-01 19:51:35,474] bootique-http-18 i.b.j.s.RequestLogger: 127.0.0.1 - - [01/May/2021:19:51:35 +0000] "GET /ping HTTP/1.1" 200 16 "-" "curl/7.64.0"
+INFO  [2021-05-01 19:52:36,102] bootique-http-15 i.b.j.i.r.RequestTimer: started
+INFO  [2021-05-01 19:52:36,124] bootique-http-15 i.b.j.i.r.RequestTimer: finished in 20 ms
+INFO  [2021-05-01 19:52:36,139] bootique-http-15 i.b.j.s.RequestLogger: 127.0.0.1 - - [01/May/2021:19:52:36 +0000] "GET /ping HTTP/1.1" 200 16 "-" "curl/7.64.0"
+INFO  [2021-05-01 19:53:38,009] bootique-http-15 i.b.j.i.r.RequestTimer: started
+INFO  [2021-05-01 19:53:38,065] bootique-http-15 i.b.j.i.r.RequestTimer: finished in 50 ms
+INFO  [2021-05-01 19:53:38,087] bootique-http-15 i.b.j.s.RequestLogger: 127.0.0.1 - - [01/May/2021:19:53:38 +0000] "GET /ping HTTP/1.1" 200 16 "-" "curl/7.64.0"
+INFO  [2021-05-01 19:54:39,504] bootique-http-23 i.b.j.i.r.RequestTimer: started
+INFO  [2021-05-01 19:54:39,537] bootique-http-23 i.b.j.i.r.RequestTimer: finished in 32 ms
+INFO  [2021-05-01 19:54:39,538] bootique-http-23 i.b.j.s.RequestLogger: 127.0.0.1 - - [01/May/2021:19:54:39 +0000] "GET /ping HTTP/1.1" 200 16 "-" "curl/7.64.0"
+INFO  [2021-05-01 19:55:40,091] bootique-http-23 i.b.j.i.r.RequestTimer: started
+INFO  [2021-05-01 19:55:40,100] bootique-http-23 i.b.j.i.r.RequestTimer: finished in 8 ms
+INFO  [2021-05-01 19:55:40,107] bootique-http-23 i.b.j.s.RequestLogger: 127.0.0.1 - - [01/May/2021:19:55:40 +0000] "GET /ping HTTP/1.1" 200 16 "-" "curl/7.64.0"
+INFO  [2021-05-01 19:56:41,338] bootique-http-23 i.b.j.i.r.RequestTimer: started
+INFO  [2021-05-01 19:56:41,363] bootique-http-23 i.b.j.i.r.RequestTimer: finished in 24 ms
+INFO  [2021-05-01 19:56:41,366] bootique-http-23 i.b.j.s.RequestLogger: 127.0.0.1 - - [01/May/2021:19:56:41 +0000] "GET /ping HTTP/1.1" 200 16 "-" "curl/7.64.0"
+INFO  [2021-05-01 19:57:44,355] bootique-http-28 i.b.j.i.r.RequestTimer: started
+INFO  [2021-05-01 19:57:44,410] bootique-http-28 i.b.j.i.r.RequestTimer: finished in 53 ms
+INFO  [2021-05-01 19:57:44,414] bootique-http-28 i.b.j.s.RequestLogger: 127.0.0.1 - - [01/May/2021:19:57:44 +0000] "GET /ping HTTP/1.1" 200 16 "-" "curl/7.64.0"
+```
+
+An example of `test_scenario_1` output:
+```
+test_scenario_1_1     | SCENARIO-1
+test_scenario_1_1     | 
+test_scenario_1_1     | Cleaning MySql up...
+test_scenario_1_1     | MySql cleaned up.
+test_scenario_1_1     | Adding an event to MySql...
+test_scenario_1_1     | Added an event to MySql.
+test_scenario_1_1     | Cleaning Redis up...
+test_scenario_1_1     | OK
+test_scenario_1_1     | Redis cleaned up.
+test_scenario_1_1     | Current value in MySql:
+test_scenario_1_1     | +--------+---------+
+test_scenario_1_1     | | name   | counter |
+test_scenario_1_1     | +--------+---------+
+test_scenario_1_1     | | game_1 |       1 |
+test_scenario_1_1     | +--------+---------+
+test_scenario_1_1     | Current value in Redis:
+test_scenario_1_1     | 
+test_scenario_1_1     | 
+test_scenario_1_1     | Holding on all commands for 5 sec
+test_scenario_1_1     | Started a delayed request with the service_1:
+test_scenario_1_1     | Setting new value to MySql...
+test_scenario_1_1     | New value has been set to MySql.
+test_scenario_1_1     | Current value in MySql:
+test_scenario_1_1     | +--------+---------+
+test_scenario_1_1     | | name   | counter |
+test_scenario_1_1     | +--------+---------+
+test_scenario_1_1     | | game_1 |       2 |
+test_scenario_1_1     | +--------+---------+
+test_scenario_1_1     | Current value in Redis:
+test_scenario_1_1     | 
+test_scenario_1_1     | 
+test_scenario_1_1     | Making request to service_2 (no delay)...
+test_scenario_1_1     | {"key":"game_1", "value":"2", status: "OK", message:"Found"}
+test_scenario_1_1     | Finished request to service_2 (no delay).
+test_scenario_1_1     | Current value in MySql:
+test_scenario_1_1     | +--------+---------+
+test_scenario_1_1     | | name   | counter |
+test_scenario_1_1     | +--------+---------+
+test_scenario_1_1     | | game_1 |       2 |
+test_scenario_1_1     | +--------+---------+
+test_scenario_1_1     | Current value in Redis:
+test_scenario_1_1     | 2
+test_scenario_1_1     | 
+test_scenario_1_1     | Holding on all commands for 3 sec
+test_scenario_1_1     | Current value in MySql:
+test_scenario_1_1     | +--------+---------+
+test_scenario_1_1     | | name   | counter |
+test_scenario_1_1     | +--------+---------+
+test_scenario_1_1     | | game_1 |       2 |
+test_scenario_1_1     | +--------+---------+
+test_scenario_1_1     | Current value in Redis:
+test_scenario_1_1     | 2
+test_scenario_1_1     | 
+test_scenario_1_1     | Making request to service_3 (no delay)...
+test_scenario_1_1     | {"key":"game_1", "value":"2", status: "OK", message:"Found"}
+test_scenario_1_1     | Finished request to service_3 (no delay).
+test_scenario_1_1     | 
+test_scenario_1_1     | Holding on all commands for 1 sec
+test_scenario_1_1     | 
+test_scenario_1_1     | Got result from rest-service-1 (delayed)
+test_scenario_1_1     | {"key":"game_1", "value":"2", status: "OK", message:"Found"}
+test_scenario_1_1     | Current value in MySql:
+test_scenario_1_1     | +--------+---------+
+test_scenario_1_1     | | name   | counter |
+test_scenario_1_1     | +--------+---------+
+test_scenario_1_1     | | game_1 |       2 |
+test_scenario_1_1     | +--------+---------+
+test_scenario_1_1     | Current value in Redis:
+test_scenario_1_1     | 2
+test_scenario_1_1     | Current value in MySql:
+test_scenario_1_1     | +--------+---------+
+test_scenario_1_1     | | name   | counter |
+test_scenario_1_1     | +--------+---------+
+test_scenario_1_1     | | game_1 |       2 |
+test_scenario_1_1     | +--------+---------+
+test_scenario_1_1     | Current value in Redis:
+test_scenario_1_1     | 2
+docker_test_scenario_1_1 exited with code 0
+(base) 
+```
+
+
 ### Scenario 2
 
 The scenario is similar to the Scenario 1, but adds an extra step at the end emulating, that C1 has no key in Redis as

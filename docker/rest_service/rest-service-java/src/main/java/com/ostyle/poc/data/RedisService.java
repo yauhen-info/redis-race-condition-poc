@@ -19,10 +19,9 @@ import java.util.List;
  */
 public class RedisService implements MonitoredRetrievable {
 
-    public static final int MILLION = 1_000_000;
+    private static final int MILLION = 1_000_000;
+    private static final String OK_STATUS = "OK";
     private static final Logger LOGGER = LoggerFactory.getLogger(RedisService.class);
-
-    public static final String OK_STATUS = "OK";
     private final Long keyExpireTime;
     private final JedisPool pool;
     private Jedis jedis; // jedis instance that shall be passed alongside
@@ -37,6 +36,13 @@ public class RedisService implements MonitoredRetrievable {
 
         pool = new JedisPool(jedisPoolConfig, config.getHost(), config.getPort(), config.getTimeout(), null);
         keyExpireTime = config.getExpireTime();
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            LOGGER.debug("Shutting the service down.");
+            LOGGER.debug("Closing Redis connections pool...");
+            pool.close();
+            LOGGER.debug("Redis connections pool has been closed before exiting the service.");
+        }));
     }
 
     @Override
