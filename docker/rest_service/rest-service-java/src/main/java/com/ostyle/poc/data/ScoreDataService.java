@@ -17,10 +17,10 @@ public class ScoreDataService {
             LoggerFactory.getLogger(ScoreDataService.class);
 
     @Inject
-    private RedisService redisStorage;
+    private RedisService redisService;
 
     @Inject
-    private MySqlService mySqlStorage;
+    private MySqlService mySqlService;
 
     /**
      * Tries to load data from cache; if not successful, looks it up in a read-only (mysql) storage.
@@ -33,21 +33,21 @@ public class ScoreDataService {
     public String requestData(String key, int delay) throws DataNotFoundException {
         // From Redis docs: if there are race conditions and another client modifies the result of our key
         // in the time between our call to WATCH and our call to EXEC, the transaction will fail.
-        try (Jedis jedis = redisStorage.getPool().getResource()) {
+        try (Jedis jedis = redisService.getPool().getResource()) {
             // first, try to get data from Redis
-            redisStorage.setJedis(jedis);
-            String dataByKey = redisStorage.getDataByKeyMonitored(key);
+            redisService.setJedis(jedis);
+            String dataByKey = redisService.getDataByKeyMonitored(key);
             if (dataByKey != null) {
                 return dataByKey;
             }
             // second, try to get data from mysql, put it into cache for potential successive requests
             // as we always expect the data to be in the read-only store, the exception is thrown if it's not the case
-            String dataFromDB = mySqlStorage.getDataByKeyMonitored(key);
+            String dataFromDB = mySqlService.getDataByKeyMonitored(key);
             LOGGER.debug("Retrieved database value '{}'", dataFromDB); // this message is helpful in race condition testing analysis
             if (dataFromDB != null) {
                 holdExecution(delay); // not related to the business logic, introduced only for race condition testing purposes
                 try {
-                    return redisStorage.updateValueInRedis(key, dataFromDB); // todo: consider a separate thread to return the value to use quicker
+                    return redisService.updateValueInRedis(key, dataFromDB); // todo: consider a separate thread to return the value to use quicker
                 } catch (InvalidRedisKeyValueState e) {
                     return requestData(key, delay); // need to request again, as Redis key could have been expired by this time
                 }
