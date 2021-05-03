@@ -90,7 +90,6 @@ public class RedisService implements MonitoredRetrievable {
     public String updateValueInRedis(String key, String value) throws InvalidRedisKeyValueState {
         LOGGER.debug("{}: Started updating Redis with [{} : {}]", getStorageName(), key, value);
         String executionStatus = OK_STATUS;
-        String result = value;
         long startTime = System.nanoTime();
 
         Transaction transaction = getJedis().multi();
@@ -118,6 +117,6 @@ public class RedisService implements MonitoredRetrievable {
                 elapsedNanos / MILLION,
                 OK_STATUS.equals(executionStatus) ? "WRITE" : executionStatus
         );
-        return result;
+        return value;
     }
 }
