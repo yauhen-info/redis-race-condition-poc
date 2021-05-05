@@ -1,5 +1,10 @@
 ## How to start the project?
 
+Requirements:
+- docker compose version 3.x, thought the solution has been tested only with 3.9 so far.
+
+There is more information on [compose and Docker compatibility matrix](https://docs.docker.com/compose/compose-file/compose-file-v3/#compose-and-docker-compatibility-matrix).
+
 While being under project root folder 'caching-redis-poc', run the following
 > sh start_project.sh
 
