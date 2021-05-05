@@ -5,7 +5,7 @@ Requirements:
 
 There is more information on [compose and Docker compatibility matrix](https://docs.docker.com/compose/compose-file/compose-file-v3/#compose-and-docker-compatibility-matrix).
 
-While being under project root folder 'caching-redis-poc', run the following
+While being under project root folder of the project, run the following
 > sh start_project.sh
 
 It will spin up the services pictured right below, including db_updater_job with the output similar to the following
