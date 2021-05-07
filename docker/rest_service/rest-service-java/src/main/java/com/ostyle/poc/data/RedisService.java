@@ -78,7 +78,7 @@ public class RedisService implements MonitoredRetrievable {
         getJedis().watch(key);
         String dataByKey = getJedis().get(key);
         if (dataByKey != null) {
-            getJedis().unwatch();
+//            getJedis().unwatch();
             return dataByKey;
         }
         return null;
@@ -96,19 +96,15 @@ public class RedisService implements MonitoredRetrievable {
         transaction.setex(key, keyExpireTime, value);
 
         List<Object> executionResults = transaction.exec();
-        if (executionResults != null) {
-            if (executionResults.size() == 1 && RedisService.OK_STATUS.equals(executionResults.get(0))) {
-                getJedis().unwatch();
-            } else {
-                transaction.discard();
-                executionStatus = "ERROR";
-                LOGGER.error("Cannot put into Redis [{} : {}]", key, value);
-            }
+        if (executionResults != null && executionResults.size() != 1) {
+            transaction.discard();
+            executionStatus = "ERROR";
+            LOGGER.error("Cannot put into Redis [{} : {}]", key, value);
         } else {
-            getJedis().unwatch();
             LOGGER.debug("Potential concurrent modification of Redis key '{}' happened; transaction has been discarded.", key);
             throw new InvalidRedisKeyValueState("Race condition", key);
         }
+        getJedis().unwatch();
         long elapsedNanos = System.nanoTime() - startTime;
         LOGGER.debug("{}: Finished updating Redis for key ({}) in {}ns ({}ms): {}",
                 getStorageName(),

@@ -1,34 +1,31 @@
 #!/bin/bash
-
 MYSQL_DATABASE=score_db
 
 EVENT_TO_TEST=game_1
 
 prepare_mysql() {
-  echo "Cleaning mysql up..."
+  echo "Cleaning MySql up..."
   SQL_DELETE_ALL="DELETE from scores;"
   mysql ${MYSQL_DATABASE} -t -e "$SQL_DELETE_ALL"
-  echo "Mysql cleaned up."
-  echo "Adding an event to mysql..."
+  echo "MySql cleaned up."
+  echo "Adding an event to MySql..."
   SQL_INSERT_EVENT_TO_TEST="INSERT INTO scores values ('$EVENT_TO_TEST', 1);"
   mysql ${MYSQL_DATABASE} -t -e "$SQL_INSERT_EVENT_TO_TEST"
-  echo "Added an event to mysql."
+  echo "Added an event to MySql."
 }
 get_event_data_from_mysql() {
   SQL_SELECT_CMD="SELECT name, counter FROM scores WHERE name = '$EVENT_TO_TEST';"
-  echo "Current value in MySql:"
-  mysql ${MYSQL_DATABASE} -t -e "$SQL_SELECT_CMD"
+  echo "Current value in MySql:" && mysql ${MYSQL_DATABASE} -t -e "$SQL_SELECT_CMD"
 }
 
 update_event_data_from_mysql() {
-  echo "Setting new value to MySql."
+  echo "Setting new value to MySql..."
   SQL_UPDATE_CMD="UPDATE scores SET counter = counter+1 WHERE name = '$EVENT_TO_TEST';"
-  mysql ${MYSQL_DATABASE} -e "$SQL_UPDATE_CMD"
-  echo "New value has been set to MySql."
+  mysql ${MYSQL_DATABASE} -e "$SQL_UPDATE_CMD" && echo "New value has been set to MySql."
 }
 clean_up_redis() {
-  # clean all redis keys
-  echo "Cleaning redis up..."
+  # clean all Redis keys
+  echo "Cleaning Redis up..."
   redis-cli -h redis -p 6379 FLUSHALL
   echo "Redis cleaned up."
 }
@@ -54,34 +51,33 @@ call_to_service_with_delay() {
 
 sleeping() {
   echo ""
-  echo "Holding on all commands for 3 sec"
-  sleep 3
+  echo "Holding on all commands for $1 sec"
+  sleep $1
 }
 call_to_service_no_delay() {
   echo ""
-  echo "Making request to service_$1 (no delay):"
+  echo "Making request to service_$1 (no delay)..."
   curl -s docker_rest-service_$1:8080/$EVENT_TO_TEST
   echo ""
+  echo "Finished request to service_$1 (no delay)."
 }
 
-echo "SCENARIO-2"
+LOGFILE="/path/to/log.log"
+TIMESTAMP=`date "+%Y-%m-%d %H:%M:%S"`
 
+echo "SCENARIO-3"
 echo ""
 prepare_mysql
 clean_up_redis
 
 current_data_in_storages
-call_to_service_with_delay "1" "6000" &
+echo "Testing only for $EVENT_TO_TEST"
 
-sleeping 3
-update_event_data_from_mysql
-current_data_in_storages
-
-call_to_service_no_delay "2"
-current_data_in_storages
-
-echo "Imitate expired key in redis"
-clean_up_redis
+for i in {1..10}; do
+  for j in 1 2; do
+    $TIMESTAMP && curl -s docker_rest-service_${i}:8080/game_$j
+    echo ""
+  done
+done
 
 sleep 10
-

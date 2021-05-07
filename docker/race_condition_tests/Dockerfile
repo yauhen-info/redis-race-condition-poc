@@ -13,5 +13,7 @@ COPY ./my.cnf ~/.my.cnf
 
 COPY test_scenario_1.sh /etc/test_scenario_1.sh
 COPY test_scenario_2.sh /etc/test_scenario_2.sh
+COPY test_scenario_3.sh /etc/test_scenario_3.sh
 CMD ["chmod","+x","/etc/test_scenario_1.sh"]
 CMD ["chmod","+x","/etc/test_scenario_2.sh"]
+CMD ["chmod","+x","/etc/test_scenario_3.sh"]

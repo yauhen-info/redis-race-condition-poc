@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 MYSQL_DATABASE=score_db
 
 EVENT_TO_TEST=game_1
