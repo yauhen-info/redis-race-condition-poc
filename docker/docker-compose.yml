@@ -11,7 +11,7 @@ services:
     networks:
       - poc-app-network
     healthcheck:
-      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      test: mysqladmin ping -h localhost
       interval: 10s
       timeout: 3s
       retries: 10
